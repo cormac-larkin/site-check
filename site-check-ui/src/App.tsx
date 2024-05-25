@@ -1,34 +1,68 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import React, { useState } from "react";
+import axios from "axios";
+import { Box, Button, TextField, Typography } from "@mui/material";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [url, setUrl] = useState("");
+  const [status, setStatus] = useState("");
+
+  const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUrl(event.target.value);
+  };
+
+  const handleUrlSubmission = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      const response = await axios.get(url);
+      setStatus(response.data.status);
+    } catch (error) {
+      setStatus("Error checking URL");
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "2rem",
+        width: "60%",
+      }}
+    >
+      <Typography variant="h1" textAlign="center">
+        Enter a website URL to check the current status
+      </Typography>
+
+      <Box
+        component="form"
+        onSubmit={handleUrlSubmission}
+        sx={{ display: "flex", flexDirection: "column", width: "30%" }}
+      >
+        <TextField
+          id="url-input-field"
+          label="Enter URL"
+          placeholder="www.mywebsite.com"
+          autoFocus
+          value={url}
+          onChange={handleUrlChange}
+        />
+        <Button
+          type="submit"
+          variant="outlined"
+          sx={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
+        >
+          Check Status
+        </Button>
+      </Box>
+
+      {status && (
+        <Typography variant="h6" textAlign="center" sx={{ marginTop: "1rem" }}>
+          Status: {status}
+        </Typography>
+      )}
+    </Box>
   );
 }
 
